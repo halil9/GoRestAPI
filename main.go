@@ -12,6 +12,9 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+var config = Config{}
+var dao = CarsDAO{}
+
 func getCars(w http.ResponseWriter, r *http.Request) {
 	cars, err := dao.FindAll()
 	if err != nil {
@@ -19,6 +22,16 @@ func getCars(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	respondWithJson(w, http.StatusOK, cars)
+}
+
+func findCar(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	model, err := dao.FindById(params["id"])
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid Movie ID")
+		return
+	}
+	respondWithJson(w, http.StatusOK, model)
 }
 
 func createCar(w http.ResponseWriter, r *http.Request) {
@@ -38,8 +51,8 @@ func createCar(w http.ResponseWriter, r *http.Request) {
 
 func updateCar(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	var car Cars
-	if err := json.NewDecoder(r.Body).Decode(&car); err != nil {
+	var model Cars
+	if err := json.NewDecoder(r.Body).Decode(&model); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
@@ -49,10 +62,11 @@ func updateCar(w http.ResponseWriter, r *http.Request) {
 	}
 	respondWithJson(w, http.StatusOK, map[string]string{"result": "success"})
 }
+
 func deleteCar(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	var car Car
-	if err := json.NewDecoder(r.Body).Decode(&car); err != nil {
+	var model Cars
+	if err := json.NewDecoder(r.Body).Decode(&model); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
@@ -63,15 +77,6 @@ func deleteCar(w http.ResponseWriter, r *http.Request) {
 	respondWithJson(w, http.StatusOK, map[string]string{"result": "success"})
 }
 
-func findCar(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	car, err := dao.FindById(params["id"])
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid Car ID")
-		return
-	}
-	respondWithJson(w, http.StatusOK, car)
-}
 func respondWithError(w http.ResponseWriter, code int, msg string) {
 	respondWithJson(w, code, map[string]string{"error": msg})
 }
