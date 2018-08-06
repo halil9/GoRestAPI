@@ -1,8 +1,9 @@
-package dao
+package DAO
 
 import (
 	"log"
 
+	. "github.com/halil9/GoRestAPI/models"
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -12,44 +13,49 @@ type CarsDAO struct {
 	Database string
 }
 
-var goexample *mgo.Database
+var db *mgo.Database
 
 const (
 	COLLECTION = "cars"
 )
 
+// Establish a connection to database
 func (m *CarsDAO) Connect() {
 	session, err := mgo.Dial(m.Server)
 	if err != nil {
 		log.Fatal(err)
 	}
-	goexample = session.DB(m.Database)
-
+	db = session.DB(m.Database)
 }
 
+// Find list of movies
 func (m *CarsDAO) FindAll() ([]Car, error) {
-	var cars []Car
-	err := goexample.C(COLLECTION).Find(bson.M{}).All(&car)
-	return cars, err
+	var model []Cars
+	err := db.C(COLLECTION).Find(bson.M{}).All(&model)
+	return model, err
 }
 
+// Find a movie by its id
 func (m *CarsDAO) FindById(id string) (Car, error) {
-	var car Cars
-	err := goexample.C(COLLECTION).FindId(bson.ObjectIdHex(id)).One(&car)
-	return car, err
+	var model Car
+	err := db.C(COLLECTION).FindId(bson.ObjectIdHex(id)).One(&model)
+	return model, err
 }
 
-func (m *CarsDAO) Insert(car Car) error {
-	err := goexample.C(COLLECTION).Insert(&car)
+// Insert a movie into database
+func (m *CarsDAO) Insert(model Cars) error {
+	err := db.C(COLLECTION).Insert(&model)
 	return err
 }
 
-func (m *CarsDAO) Delete(car Car) error {
-	err := goexample.C(COLLECTION).Remove(&car)
+// Delete an existing movie
+func (m *CarsDAO) Delete(model Car) error {
+	err := db.C(COLLECTION).Remove(&model)
 	return err
 }
 
-func (m *CarsDAO) Update(car Car) error {
-	err := goexample.C(COLLECTION).UpdateId(car.ID, &car)
+// Update an existing movie
+func (m *CarsDAO) Update(model Car) error {
+	err := db.C(COLLECTION).UpdateId(model.ID, &model)
 	return err
 }

@@ -6,6 +6,9 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	. "github.com/halil9/GoRestAPI/config"
+	. "github.com/halil9/GoRestAPI/dao"
+	. "github.com/halil9/GoRestAPI/models"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -20,27 +23,27 @@ func getCars(w http.ResponseWriter, r *http.Request) {
 
 func createCar(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	var car Car
-	if err := json.NewDecoder(r.Body).Decode(&car); err != nil {
+	var model Cars
+	if err := json.NewDecoder(r.Body).Decode(&model); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
-	car.ID = bson.NewObjectId()
-	if err := dao.Insert(car); err != nil {
+	model.ID = bson.NewObjectId()
+	if err := dao.Insert(model); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	respondWithJson(w, http.StatusCreated, car)
+	respondWithJson(w, http.StatusCreated, model)
 }
 
 func updateCar(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	var car Car
+	var car Cars
 	if err := json.NewDecoder(r.Body).Decode(&car); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
-	if err := dao.Update(car); err != nil {
+	if err := dao.Update(model); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -53,7 +56,7 @@ func deleteCar(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
-	if err := dao.Delete(car); err != nil {
+	if err := dao.Delete(model); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -68,6 +71,24 @@ func findCar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	respondWithJson(w, http.StatusOK, car)
+}
+func respondWithError(w http.ResponseWriter, code int, msg string) {
+	respondWithJson(w, code, map[string]string{"error": msg})
+}
+
+func respondWithJson(w http.ResponseWriter, code int, payload interface{}) {
+	response, _ := json.Marshal(payload)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	w.Write(response)
+}
+
+func init() {
+	config.Read()
+
+	dao.Server = config.Server
+	dao.Database = config.Database
+	dao.Connect()
 }
 
 func main() {
