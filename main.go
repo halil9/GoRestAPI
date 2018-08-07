@@ -14,7 +14,7 @@ import (
 
 var config = Config{}
 var dao = CarsDAO{}
-
+// create a get,post,put and delete method.
 func getCars(w http.ResponseWriter, r *http.Request) {
 	cars, err := dao.FindAll()
 	if err != nil {
@@ -28,7 +28,7 @@ func findCar(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	model, err := dao.FindById(params["id"])
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid Movie ID")
+		respondWithError(w, http.StatusBadRequest, "Invalid Cars ID")
 		return
 	}
 	respondWithJson(w, http.StatusOK, model)
