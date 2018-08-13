@@ -1,10 +1,11 @@
-FROM nimmis/golang:latest
-COPY api/. /api/.
-WORKDIR /api/.
-RUN go get "github.com/gorilla/mux"
-RUN go get "github.com/halil9/GoRestAPI/config"
-RUN go get "github.com/halil9/GoRestAPI/DAO"
-RUN go get "github.com/halil9/GoRestAPI/models"
-RUN go get "gopkg.in/mgo.v2/bson"
+FROM golang:1.9.1-alpine
+RUN apk add --update git; \
+    mkdir -p ${GOPATH}/api; \
+    go get -u github.com/gorilla/mux
+WORKDIR ${GOPATH}/api/.
+COPY api/. ${GOPATH}/api/.
+RUN go get github.com/halil9/GoRestAPI/api/config
+RUN go get gopkg.in/mgo.v2/bson
+RUN go get github.com/halil9/GoRestAPI/api/DAO
 EXPOSE 8000
 ENTRYPOINT go run main.go

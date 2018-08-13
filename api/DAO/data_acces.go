@@ -3,7 +3,7 @@ package DAO
 import (
 	"log"
 
-	. "github.com/halil9/GoRestAPI/api/models"
+	. "github.com/halil9/GoRestAPI/models"
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -34,7 +34,7 @@ func (m *CarsDAO) FindAll() ([]Cars, error) {
 }
 
 func (m *CarsDAO) FindById(id string) (Cars, error) {
-	var model Car
+	var model Cars
 	err := db.C(COLLECTION).FindId(bson.ObjectIdHex(id)).One(&model)
 	return model, err
 }
