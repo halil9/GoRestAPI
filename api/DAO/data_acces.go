@@ -3,7 +3,7 @@ package DAO
 import (
 	"log"
 
-	. "github.com/halil9/GoRestAPI/models"
+	. "github.com/halil9/GoRestAPI/api/models"
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
