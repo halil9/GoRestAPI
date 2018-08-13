@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	. "github.com/halil9/GoRestAPI/api/DAO"
 	. "github.com/halil9/GoRestAPI/api/config"
-	. "github.com/halil9/GoRestAPI/api/dao"
 	. "github.com/halil9/GoRestAPI/api/models"
 	"gopkg.in/mgo.v2/bson"
 )
